@@ -47,8 +47,9 @@ def run(filename):
     reflect = '.white'
 
     #print symbols
-    for s in symbols:
-        print s
-        print symbols[s]
+    #for s in symbols:
+    #    print s
+    #    print symbols[s]
+    #print symbols
     for command in commands:
         print command
