@@ -52,8 +52,10 @@ def run(filename):
     #    print symbols[s]
     print symbols
     for command in commands:
+
         print command
         op = command['op']
+        args = command['args']
 
         if op == 'push':
             stack.append( [x[:] for x in stack[-1]] )
@@ -61,23 +63,19 @@ def run(filename):
         elif op == 'pop':
             stack.pop()
 
+        elif op == 'move':
+            t = make_translate(float(args[0]), float(args[1]), float(args[2]))
+            matrix_mult( stack[-1], t )
+            stack[-1] = [ x[:] for x in t]
+
         elif op == 'scale':
-            args = command['args']
             t = make_scale(float(args[0]), float(args[1]), float(args[2]))
             if command['knob']:
                 knob = command['knob']
             matrix_mult( stack[-1], t )
             stack[-1] = [ x[:] for x in t]
 
-        elif op == 'move':
-            args = command['args']
-            t = make_translate(float(args[0]), float(args[1]), float(args[2]))
-            matrix_mult( stack[-1], t )
-            stack[-1] = [ x[:] for x in t]
-
         elif op == 'rotate':
-            #print 'ROTATE\t' + str(args)
-            args = command['args']
             theta = float(args[1]) * (math.pi / 180)
             if args[0] == 'x':
                 t = make_rotX(theta)
@@ -88,4 +86,30 @@ def run(filename):
             matrix_mult( stack[-1], t )
             stack[-1] = [ x[:] for x in t]
 
+        elif op == 'sphere':
+            #print 'SPHERE\t' + str(args)
+            add_sphere(tmp,
+                       float(args[0]), float(args[1]), float(args[2]),
+                       float(args[3]), step_3d)
+            matrix_mult( stack[-1], tmp )
+            draw_polygons(tmp, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
+            tmp = []
+
+        #elif op == 'torus':
+        #    #print 'TORUS\t' + str(args)
+        #    add_torus(polygons,
+        #              float(args[0]), float(args[1]), float(args[2]),
+        #              float(args[3]), float(args[4]), step_3d)
+        #    matrix_mult( stack[-1], polygons )
+        #    draw_polygons(polygons, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
+        #    polygons = []
+
+        #elif op == 'box':
+        #    #print 'BOX\t' + str(args)
+        #    add_box(polygons,
+        #            float(args[0]), float(args[1]), float(args[2]),
+        #            float(args[3]), float(args[4]), float(args[5]))
+        #    matrix_mult( stack[-1], polygons )
+        #    draw_polygons(polygons, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
+        #    polygons = []
 
