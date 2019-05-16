@@ -50,9 +50,6 @@ def run(filename):
     #for s in symbols:
     #    print s
     #    print symbols[s]
-    print symbols
-    print
-    print
     for command in commands:
 
         #print command
@@ -105,8 +102,6 @@ def run(filename):
                 con = '.white'
             else:
                 con = command['constants']
-            print con
-            print symbols[con]
             add_torus(polygons,
                       float(args[0]), float(args[1]), float(args[2]),
                       float(args[3]), float(args[4]), step_3d)
@@ -135,7 +130,8 @@ def run(filename):
             edges = []
 
         elif op == 'display' or op == 'save':
+            print command
             if op == 'display':
                 display(screen)
             else:
-                save_extension(screen, args[0])
+                save_extension(screen, args[0] + '.jpg')
