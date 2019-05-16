@@ -29,17 +29,17 @@ def run(filename):
               255]]
 
     color = [0, 0, 0]
-    tmp = new_matrix()
-    ident( tmp )
+    polygons = new_matrix()
+    ident( polygons )
 
-    stack = [ [x[:] for x in tmp] ]
+    stack = [ [x[:] for x in polygons] ]
     screen = new_screen()
     zbuffer = new_zbuffer()
-    tmp = []
+    polygons = []
     step_3d = 100
     consts = ''
-    coords = []
-    coords1 = []
+    polygons = []
+    edges = []
     symbols['.white'] = ['constants',
                          {'red': [0.2, 0.5, 0.5],
                           'green': [0.2, 0.5, 0.5],
@@ -51,9 +51,11 @@ def run(filename):
     #    print s
     #    print symbols[s]
     print symbols
+    print
+    print
     for command in commands:
 
-        print command
+        #print command
         op = command['op']
         args = command['args']
 
@@ -87,29 +89,53 @@ def run(filename):
             stack[-1] = [ x[:] for x in t]
 
         elif op == 'sphere':
-            #print 'SPHERE\t' + str(args)
-            add_sphere(tmp,
+            if command['constants'] == None:
+                con = '.white'
+            else:
+                con = command['constants']
+            add_sphere(polygons,
                        float(args[0]), float(args[1]), float(args[2]),
                        float(args[3]), step_3d)
-            matrix_mult( stack[-1], tmp )
-            draw_polygons(tmp, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
-            tmp = []
+            matrix_mult( stack[-1], polygons )
+            draw_polygons(polygons, screen, zbuffer, view, ambient, light, symbols, con)
+            polygons = []
 
-        #elif op == 'torus':
-        #    #print 'TORUS\t' + str(args)
-        #    add_torus(polygons,
-        #              float(args[0]), float(args[1]), float(args[2]),
-        #              float(args[3]), float(args[4]), step_3d)
-        #    matrix_mult( stack[-1], polygons )
-        #    draw_polygons(polygons, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
-        #    polygons = []
+        elif op == 'torus':
+            if command['constants'] == None:
+                con = '.white'
+            else:
+                con = command['constants']
+            print con
+            print symbols[con]
+            add_torus(polygons,
+                      float(args[0]), float(args[1]), float(args[2]),
+                      float(args[3]), float(args[4]), step_3d)
+            matrix_mult( stack[-1], polygons )
+            draw_polygons(polygons, screen, zbuffer, view, ambient, light, symbols, con)
+            polygons = []
 
-        #elif op == 'box':
-        #    #print 'BOX\t' + str(args)
-        #    add_box(polygons,
-        #            float(args[0]), float(args[1]), float(args[2]),
-        #            float(args[3]), float(args[4]), float(args[5]))
-        #    matrix_mult( stack[-1], polygons )
-        #    draw_polygons(polygons, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
-        #    polygons = []
+        elif op == 'box':
+            if command['constants'] == None:
+                con = '.white'
+            else:
+                con = command['constants']
+            add_box(polygons,
+                    float(args[0]), float(args[1]), float(args[2]),
+                    float(args[3]), float(args[4]), float(args[5]))
+            matrix_mult( stack[-1], polygons )
+            draw_polygons(polygons, screen, zbuffer, view, ambient, light, symbols, con)
+            polygons = []
 
+        elif op == 'line':
+            add_edge( edges,
+                      float(args[0]), float(args[1]), float(args[2]),
+                      float(args[3]), float(args[4]), float(args[5]) )
+            matrix_mult( systems[-1], edges )
+            draw_lines(eges, screen, zbuffer, color)
+            edges = []
+
+        elif op == 'display' or op == 'save':
+            if op == 'display':
+                display(screen)
+            else:
+                save_extension(screen, args[0])
